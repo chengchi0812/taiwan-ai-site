@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Global AI Index - 台灣分析與建議</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.10.3/Recharts.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        const { 
+            Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, 
+            ResponsiveContainer, Tooltip 
+        } = Recharts;
+
+        const TaiwanAIIndexDashboard = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [selectedIndicator, setSelectedIndicator] = useState(null);
+
+            // 台灣各指標排名數據
+            const taiwanData = [
+                { indicator: 'Talent', rank: 33, score: 61, category: 'weak', fullName: '人才' },
+                { indicator: 'Infrastructure', rank: 7, score: 87, category: 'strong', fullName: '基礎設施' },
+                { indicator: 'Operating Env', rank: 15, score: 79, category: 'medium', fullName: '運營環境' },
+                { indicator: 'Research', rank: 18, score: 76, category: 'medium', fullName: '研究' },
+                { indicator: 'Development', rank: 27, score: 67, category: 'weak', fullName: '開發' },
+                { indicator: 'Gov Strategy', rank: 8, score: 86, category: 'strong', fullName: '政府策略' },
+                { indicator: 'Commercial', rank: 30, score: 64, category: 'weak', fullName: '商業生態' },
+                { indicator: 'Scale', rank: 16, score: 78, category: 'medium', fullName: '規模' },
+                { indicator: 'Intensity', rank: 21, score: 73, category: 'medium', fullName: '強度' },
+            ];
+
+            // 對標國家數據
+            const benchmarkCountries = [
+                { name: '台灣', rank: 16, flag: '🇹🇼' },
+                { name: 'UAE', rank: 10, flag: '🇦🇪' },
+                { name: '日本', rank: 11, flag: '🇯🇵' },
+                { name: '荷蘭', rank: 13, flag: '🇳🇱' },
+                { name: '芬蘭', rank: 15, flag: '🇫🇮' },
+            ];
+
+            // 各指標第一名
+            const topCountries = [
+                { indicator: 'Talent', country: '美國', flag: '🇺🇸' },
+                { indicator: 'Infrastructure', country: '美國', flag: '🇺🇸' },
+                { indicator: 'Operating Env', country: '新加坡', flag: '🇸🇬' },
+                { indicator: 'Research', country: '美國', flag: '🇺🇸' },
+                { indicator: 'Development', country: '美國', flag: '🇺🇸' },
+                { indicator: 'Gov Strategy', country: '法國', flag: '🇫🇷' },
+                { indicator: 'Commercial', country: '美國', flag: '🇺🇸' },
+                { indicator: 'Scale', country: '美國', flag: '🇺🇸' },
+                { indicator: 'Intensity', country: '新加坡', flag: '🇸🇬' },
+            ];
+
+            // 詳細建議
+            const recommendations = {
+                strong: [
+                    {
+                        title: 'Infrastructure 基礎設施',
+                        rank: 7,
+                        suggestions: [
+                            '把算力/基礎設施做成可近用的公共資源',
+                            '推動算力券、共享集群、資料與評測環境',
+                            '以垂直場景帶動「可複製落地」'
+                        ]
+                    },
+                    {
+                        title: 'Government Strategy 政府策略',
+                        rank: 8,
+                        suggestions: [
+                            '政策投入改為產出 KPI',
+                            '追蹤企業導入率、示範案擴散',
+                            '關注人才留任、募資與退出（M&A/IPO）'
+                        ]
+                    }
+                ],
+                medium: [
+                    {
+                        title: 'Operating Environment 運營環境',
+                        rank: 15,
+                        suggestions: [
+                            '推動可信任 AI 框架',
+                            '完善資料治理機制',
+                            '採購制度友善化以降低導入阻力'
+                        ]
+                    }
+                ],
+                weak: [
+                    {
+                        title: 'Talent 人才',
+                        rank: 33,
+                        suggestions: [
+                            '優先補資深人才缺口',
+                            '推動留才/回流政策',
+                            '加強在職轉訓與產學工程人才培育'
+                        ]
+                    },
+                    {
+                        title: 'Development 開發',
+                        rank: 27,
+                        suggestions: [
+                            '加速研究轉譯到產品',
+                            '聚焦垂直領域：製造/半導體/醫療/金融/資安',
+                            '建立可複製解方模式'
+                        ]
+                    },
+                    {
+                        title: 'Commercial Ecosystem 商業生態',
+                        rank: 30,
+                        suggestions: [
+                            '打造商業飛輪：採購/示範→規模化採用→資本退出',
+                            '鼓勵大企業 CVC/accelerator',
+                            '提升 POC→採用轉換率'
+                        ]
+                    }
+                ]
+            };
+
+            // 對標國家學習重點
+            const learningPoints = [
+                {
+                    country: 'UAE',
+                    flag: '🇦🇪',
+                    rank: 10,
+                    type: '政策/算力驅動型',
+                    points: ['採購與算力配給', 'POC→擴散機制', '吸引國際企業與資本', '提升強度']
+                },
+                {
+                    country: '芬蘭',
+                    flag: '🇫🇮',
+                    rank: 15,
+                    type: '人才/開發強度型',
+                    points: ['人才培育與終身學習', '研發轉譯 pipeline', '中小企業擴散']
+                },
+                {
+                    country: '荷蘭',
+                    flag: '🇳🇱',
+                    rank: 13,
+                    type: '市場化/商業化強',
+                    points: ['加速器/創投連動', '跨國市場 access', '法規/資料治理縮短導入時間']
+                },
+                {
+                    country: '日本',
+                    flag: '🇯🇵',
+                    rank: 11,
+                    type: '企業帶動供應鏈落地',
+                    points: ['大企業導入標準化', '在職培育', '垂直場景產品化與輸出']
+                }
+            ];
+
+            const getColor = (category) => {
+                switch(category) {
+                    case 'strong': return '#10b981';
+                    case 'medium': return '#f59e0b';
+                    case 'weak': return '#ef4444';
+                    default: return '#6b7280';
+                }
+            };
+
+            const getCategoryLabel = (category) => {
+                switch(category) {
+                    case 'strong': return '強項';
+                    case 'medium': return '中等';
+                    case 'weak': return '待加強';
+                    default: return '';
+                }
+            };
+
+            const CustomTooltip = ({ payload, active }) => {
+                if (active && payload && payload[0]) {
+                    const data = payload[0].payload;
+                    return (
+                        <div className="bg-slate-900 p-3 rounded-lg border border-slate-600 shadow-xl">
+                            <p className="font-bold text-cyan-400">{data.fullName}</p>
+                            <p className="text-white">排名: #{data.rank}</p>
+                            <p className={`text-sm ${
+                                data.category === 'strong' ? 'text-emerald-400' :
+                                data.category === 'weak' ? 'text-red-400' : 'text-amber-400'
+                            }`}>
+                                {getCategoryLabel(data.category)}
+                            </p>
+                        </div>
+                    );
+                }
+                return null;
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-4 md:p-6">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header */}
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center gap-3 mb-4">
+                                <span className="text-4xl md:text-5xl">🇹🇼</span>
+                                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                                    2025 Global AI Index
+                                </h1>
+                            </div>
+                            <p className="text-slate-400 text-lg">台灣分析與策略建議</p>
+                            <div className="mt-4 inline-flex items-center gap-2 bg-slate-700/50 px-6 py-3 rounded-full">
+                                <span className="text-slate-400">總排名</span>
+                                <span className="text-3xl md:text-4xl font-bold text-cyan-400">#16</span>
+                                <span className="text-slate-500">/ 93 國</span>
+                            </div>
+                        </div>
+
+                        {/* Navigation Tabs */}
+                        <div className="flex justify-center gap-2 mb-8 flex-wrap">
+                            {[
+                                { id: 'overview', label: '📊 總覽', desc: '雷達圖分析' },
+                                { id: 'details', label: '📋 指標詳情', desc: '強弱項診斷' },
+                                { id: 'benchmark', label: '🌍 對標國家', desc: '學習重點' },
+                                { id: 'action', label: '🎯 行動建議', desc: '策略方向' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`px-4 md:px-5 py-3 rounded-xl transition-all duration-300 ${
+                                        activeTab === tab.id
+                                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/25'
+                                            : 'bg-slate-700/50 hover:bg-slate-600/50'
+                                    }`}
+                                >
+                                    <div className="font-medium text-sm md:text-base">{tab.label}</div>
+                                    <div className="text-xs text-slate-300 opacity-75 hidden md:block">{tab.desc}</div>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="bg-slate-800/50 rounded-2xl p-4 md:p-6 backdrop-blur-sm border border-slate-700/50">
+                            
+                            {/* Overview Tab */}
+                            {activeTab === 'overview' && (
+                                <div className="grid lg:grid-cols-2 gap-8">
+                                    {/* Radar Chart */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4 text-center">各指標表現雷達圖</h2>
+                                        <div className="h-72 md:h-80">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <RadarChart data={taiwanData}>
+                                                    <PolarGrid stroke="#475569" />
+                                                    <PolarAngleAxis 
+                                                        dataKey="indicator" 
+                                                        tick={{ fill: '#94a3b8', fontSize: 10 }}
+                                                    />
+                                                    <PolarRadiusAxis 
+                                                        angle={90} 
+                                                        domain={[0, 100]} 
+                                                        tick={{ fill: '#64748b', fontSize: 10 }}
+                                                    />
+                                                    <Radar
+                                                        name="台灣"
+                                                        dataKey="score"
+                                                        stroke="#06b6d4"
+                                                        fill="#06b6d4"
+                                                        fillOpacity={0.3}
+                                                        strokeWidth={2}
+                                                    />
+                                                    <Tooltip content={<CustomTooltip />} />
+                                                </RadarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                        <p className="text-center text-slate-400 text-sm mt-2">
+                                            滑鼠移至雷達圖查看詳細資訊
+                                        </p>
+                                    </div>
+
+                                    {/* Indicator List */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4">各指標排名一覽</h2>
+                                        <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
+                                            {taiwanData.map((item, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    onClick={() => setSelectedIndicator(selectedIndicator === idx ? null : idx)}
+                                                    className={`p-3 md:p-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                                                        selectedIndicator === idx 
+                                                            ? 'bg-slate-700 ring-2 ring-cyan-500' 
+                                                            : 'bg-slate-700/30 hover:bg-slate-700/50'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-2 md:gap-3">
+                                                            <div 
+                                                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                                                style={{ backgroundColor: getColor(item.category) }}
+                                                            />
+                                                            <span className="font-medium text-sm md:text-base">{item.fullName}</span>
+                                                            <span className="text-slate-500 text-xs md:text-sm hidden sm:inline">{item.indicator}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 md:gap-3">
+                                                            <span className={`px-2 py-1 rounded text-xs ${
+                                                                item.category === 'strong' ? 'bg-emerald-500/20 text-emerald-400' :
+                                                                item.category === 'weak' ? 'bg-red-500/20 text-red-400' : 
+                                                                'bg-amber-500/20 text-amber-400'
+                                                            }`}>
+                                                                {getCategoryLabel(item.category)}
+                                                            </span>
+                                                            <span className="text-xl md:text-2xl font-bold text-slate-300">#{item.rank}</span>
+                                                        </div>
+                                                    </div>
+                                                    {selectedIndicator === idx && (
+                                                        <div className="mt-3 pt-3 border-t border-slate-600">
+                                                            <p className="text-slate-400 text-sm">
+                                                                第一名：{topCountries[idx].flag} {topCountries[idx].country}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Details Tab */}
+                            {activeTab === 'details' && (
+                                <div className="space-y-8">
+                                    {/* Strong Points */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                                            <span className="w-4 h-4 rounded-full bg-emerald-500"></span>
+                                            強項指標 → 擴散策略
+                                        </h2>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            {recommendations.strong.map((item, idx) => (
+                                                <div key={idx} className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-5">
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <h3 className="font-bold text-emerald-400 text-sm md:text-base">{item.title}</h3>
+                                                        <span className="text-2xl font-bold text-emerald-300">#{item.rank}</span>
+                                                    </div>
+                                                    <ul className="space-y-2">
+                                                        {item.suggestions.map((s, i) => (
+                                                            <li key={i} className="flex items-start gap-2 text-slate-300 text-sm">
+                                                                <span className="text-emerald-400 mt-1">▸</span>
+                                                                {s}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Medium Points */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                                            <span className="w-4 h-4 rounded-full bg-amber-500"></span>
+                                            中等指標 → 優化方向
+                                        </h2>
+                                        <div className="grid md:grid-cols-1 gap-4">
+                                            {recommendations.medium.map((item, idx) => (
+                                                <div key={idx} className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-5">
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <h3 className="font-bold text-amber-400">{item.title}</h3>
+                                                        <span className="text-2xl font-bold text-amber-300">#{item.rank}</span>
+                                                    </div>
+                                                    <ul className="space-y-2">
+                                                        {item.suggestions.map((s, i) => (
+                                                            <li key={i} className="flex items-start gap-2 text-slate-300 text-sm">
+                                                                <span className="text-amber-400 mt-1">▸</span>
+                                                                {s}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Weak Points */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                                            <span className="w-4 h-4 rounded-full bg-red-500"></span>
+                                            待加強指標 → 補強重點
+                                        </h2>
+                                        <div className="grid md:grid-cols-3 gap-4">
+                                            {recommendations.weak.map((item, idx) => (
+                                                <div key={idx} className="bg-red-500/10 border border-red-500/30 rounded-xl p-5">
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <h3 className="font-bold text-red-400 text-sm md:text-base">{item.title}</h3>
+                                                        <span className="text-2xl font-bold text-red-300">#{item.rank}</span>
+                                                    </div>
+                                                    <ul className="space-y-2">
+                                                        {item.suggestions.map((s, i) => (
+                                                            <li key={i} className="flex items-start gap-2 text-slate-300 text-sm">
+                                                                <span className="text-red-400 mt-1">▸</span>
+                                                                {s}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Benchmark Tab */}
+                            {activeTab === 'benchmark' && (
+                                <div className="space-y-8">
+                                    {/* Ranking Comparison */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4">總排名比較</h2>
+                                        <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+                                            {benchmarkCountries.sort((a, b) => a.rank - b.rank).map((country, idx) => (
+                                                <div 
+                                                    key={idx}
+                                                    className={`p-3 md:p-4 rounded-xl text-center min-w-20 md:min-w-24 ${
+                                                        country.name === '台灣' 
+                                                            ? 'bg-cyan-500/20 border-2 border-cyan-500' 
+                                                            : 'bg-slate-700/50'
+                                                    }`}
+                                                >
+                                                    <div className="text-2xl md:text-3xl mb-2">{country.flag}</div>
+                                                    <div className="font-medium text-sm md:text-base">{country.name}</div>
+                                                    <div className={`text-xl md:text-2xl font-bold ${
+                                                        country.name === '台灣' ? 'text-cyan-400' : 'text-slate-300'
+                                                    }`}>
+                                                        #{country.rank}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Learning Points */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4">對標國家學習重點</h2>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            {learningPoints.map((item, idx) => (
+                                                <div key={idx} className="bg-slate-700/30 rounded-xl p-5 hover:bg-slate-700/50 transition-all">
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <span className="text-3xl">{item.flag}</span>
+                                                        <div>
+                                                            <h3 className="font-bold text-lg">{item.country}</h3>
+                                                            <span className="text-cyan-400 text-sm">#{item.rank} · {item.type}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        {item.points.map((point, i) => (
+                                                            <div key={i} className="flex items-center gap-2 text-slate-300 text-sm">
+                                                                <span className="text-cyan-400">✓</span>
+                                                                {point}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Top Countries by Indicator */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4">各指標第一名國家</h2>
+                                        <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3">
+                                            {topCountries.map((item, idx) => (
+                                                <div key={idx} className="bg-slate-700/30 rounded-lg p-3 text-center">
+                                                    <div className="text-xl md:text-2xl mb-1">{item.flag}</div>
+                                                    <div className="text-xs text-slate-400">{taiwanData[idx].fullName}</div>
+                                                    <div className="text-xs md:text-sm font-medium">{item.country}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Action Tab */}
+                            {activeTab === 'action' && (
+                                <div className="space-y-8">
+                                    {/* Core Strategy */}
+                                    <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl p-5 md:p-6 border border-cyan-500/30">
+                                        <h2 className="text-xl font-bold mb-4 text-cyan-400">核心策略方向</h2>
+                                        <p className="text-base md:text-lg text-slate-200 mb-4">
+                                            用「<span className="text-emerald-400 font-bold">算力/政策</span>」槓桿帶動「<span className="text-amber-400 font-bold">採用/商業化/人才密度</span>」
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs md:text-sm">
+                                                Infrastructure #7
+                                            </span>
+                                            <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs md:text-sm">
+                                                Government Strategy #8
+                                            </span>
+                                            <span className="text-slate-500 self-center">→</span>
+                                            <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs md:text-sm">
+                                                Talent #33
+                                            </span>
+                                            <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs md:text-sm">
+                                                Commercial #30
+                                            </span>
+                                            <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs md:text-sm">
+                                                Development #27
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Design Principles */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4">設計原則</h2>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="bg-slate-700/30 rounded-xl p-5">
+                                                <h3 className="font-bold text-purple-400 mb-3">🔧 可複製的制度/工具</h3>
+                                                <ul className="space-y-2 text-slate-300">
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-purple-400">•</span>採購機制優化
+                                                    </li>
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-purple-400">•</span>算力配給制度
+                                                    </li>
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-purple-400">•</span>資料治理框架
+                                                    </li>
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-purple-400">•</span>產業擴散模式
+                                                    </li>
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-purple-400">•</span>資本市場機制
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div className="bg-slate-700/30 rounded-xl p-5">
+                                                <h3 className="font-bold text-orange-400 mb-3">📊 可量化 KPI 驗收</h3>
+                                                <ul className="space-y-2 text-slate-300">
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-orange-400">•</span>企業 AI 導入率
+                                                    </li>
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-orange-400">•</span>POC → 採用轉換率
+                                                    </li>
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-orange-400">•</span>人才留任率
+                                                    </li>
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-orange-400">•</span>募資金額
+                                                    </li>
+                                                    <li className="flex items-center gap-2">
+                                                        <span className="text-orange-400">•</span>Exit（M&A/IPO）數量
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Priority Actions */}
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-4">優先行動項目</h2>
+                                        <div className="space-y-3">
+                                            {[
+                                                { priority: 1, title: '人才補強', desc: '資深人才留才/回流 + 在職轉訓 + 產學工程人才', color: 'red' },
+                                                { priority: 2, title: '商業飛輪', desc: '採購/示範 → 規模化採用 → 資本退出循環', color: 'amber' },
+                                                { priority: 3, title: '研發轉譯', desc: '垂直領域（製造/半導體/醫療/金融/資安）可複製解方', color: 'blue' },
+                                                { priority: 4, title: '強度提升', desc: '大企業 CVC/accelerator 帶動生態系', color: 'purple' },
+                                            ].map((item, idx) => (
+                                                <div key={idx} className="flex items-center gap-4 bg-slate-700/30 rounded-xl p-4 hover:bg-slate-700/50 transition-all">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0
+                                                        ${item.color === 'red' ? 'bg-red-500/20 text-red-400' :
+                                                            item.color === 'amber' ? 'bg-amber-500/20 text-amber-400' :
+                                                            item.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
+                                                            'bg-purple-500/20 text-purple-400'}`}
+                                                    >
+                                                        {item.priority}
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-bold">{item.title}</h3>
+                                                        <p className="text-slate-400 text-sm">{item.desc}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="text-center mt-6 text-slate-500 text-sm">
+                            資料來源：2025 Global AI Index | 台灣分析與建議報告
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<TaiwanAIIndexDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
